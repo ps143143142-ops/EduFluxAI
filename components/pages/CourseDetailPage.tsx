@@ -28,7 +28,7 @@ const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, currentUs
             setCourse(fetchedCourse);
         }
         setIsLoading(false);
-    }, [courseId]);
+    }, [courseId, currentUser]); // Rerun when currentUser changes to reflect new enrollment
 
     const handleEnrollment = useCallback(() => {
         if (!course || !currentUser) return;

@@ -1,3 +1,4 @@
+
 import { User } from '../types';
 
 // This is a simplified simulation of JWT. In a real application, use a library like 'jsonwebtoken'.

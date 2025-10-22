@@ -34,7 +34,7 @@ const ResumeBuilderPage: React.FC = () => {
         }
     }, [formData]);
 
-    // Simplified Markdown to HTML renderer
+    // Simple Markdown to HTML renderer
     const renderMarkdown = (text: string) => {
         return text
             .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mt-2">$1</h3>')
@@ -42,10 +42,7 @@ const ResumeBuilderPage: React.FC = () => {
             .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-center mb-2">$1</h1>')
             .replace(/\*\*(.*)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*)\*/g, '<em>$1</em>')
-            .replace(/^- (.*$)/gim, '<li class="ml-4">$1</li>')
-            .replace(/^\s*<li/gm, '<ul><li')
-            .replace(/<\/li>\s*$/, '</li></ul>')
-            .replace(/<\/li>\s*<li/gm, '</li><li')
+            .replace(/^- (.*$)/gim, '<li class="ml-4 list-disc">$1</li>')
             .replace(/\n/g, '<br />');
     };
 

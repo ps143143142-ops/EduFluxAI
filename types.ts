@@ -1,3 +1,4 @@
+
 export type UserRole = 'student' | 'admin';
 
 export interface ExternalAccount {
@@ -90,7 +91,7 @@ export interface ChatMessage {
   text: string;
 }
 
-export type Page = 'home' | 'login' | 'register' | 'student-dashboard' | 'admin-dashboard' | 'courses' | 'learning-roadmap' | 'career-quiz' | 'resume-builder' | 'dsa-learning' | 'future-trends' | 'dsa-problems' | 'resources' | 'profile-settings' | 'dsa-leaderboard' | 'course-detail';
+export type Page = 'home' | 'login' | 'register' | 'student-dashboard' | 'admin-dashboard' | 'courses' | 'learning-roadmap' | 'career-quiz' | 'resume-builder' | 'dsa-learning' | 'future-trends' | 'dsa-problems' | 'resources' | 'profile-settings' | 'dsa-leaderboard' | 'course-detail' | 'admin-users' | 'ai-tools';
 
 export interface ResumeData {
     name: string;

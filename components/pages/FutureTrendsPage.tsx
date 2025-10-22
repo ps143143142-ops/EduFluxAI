@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { getFutureTrends } from '../../services/geminiService';
 import Spinner from '../ui/Spinner';

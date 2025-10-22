@@ -1,3 +1,4 @@
+
 // Base64 decoding function
 export function decode(base64: string): Uint8Array {
   const binaryString = atob(base64);

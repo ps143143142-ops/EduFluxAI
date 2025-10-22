@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type, GenerateContentResponse, Chat, Modality } from "@google/genai";
 import { LearningRoadmap, CareerPath, ResumeData } from '../types';
 
@@ -99,7 +100,7 @@ export const recommendCareerPath = async (answers: Record<string, string>): Prom
 
 export const createChat = (): Chat => {
     return ai.chats.create({
-        model: 'gemini-2.5-flash-lite',
+        model: 'gemini-2.5-flash',
         config: {
             systemInstruction: 'You are EduFluxAI\'s Smart Tutor. You are a helpful and friendly AI assistant for students learning about technology. Keep your answers concise and encouraging. You can answer questions related to courses, topics, or concepts.',
         },

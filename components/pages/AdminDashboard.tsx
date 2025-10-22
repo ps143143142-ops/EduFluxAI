@@ -1,9 +1,21 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import Card from '../ui/Card';
+import * as api from '../../services/apiService';
+import { Page } from '../../types';
 
-const AdminDashboard: React.FC = () => {
+interface AdminDashboardProps {
+    navigate: (page: Page) => void;
+}
+
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate }) => {
+    const [userCount, setUserCount] = useState(0);
+
+    useEffect(() => {
+        setUserCount(api.getAllUsers().length);
+    }, []);
+
     const revenueData = [
       { name: 'Jan', revenue: 4000 },
       { name: 'Feb', revenue: 3000 },
@@ -37,8 +49,9 @@ const AdminDashboard: React.FC = () => {
                     <p className="text-5xl font-bold text-indigo-500">$28,000</p>
                 </Card>
                  <Card className="p-6">
-                    <h3 className="font-bold text-lg mb-2 text-slate-800 dark:text-white">Total Students</h3>
-                    <p className="text-5xl font-bold text-indigo-500">1,250</p>
+                    <h3 className="font-bold text-lg mb-2 text-slate-800 dark:text-white">Total Users</h3>
+                    <p className="text-5xl font-bold text-indigo-500">{userCount}</p>
+                    <button onClick={() => navigate('admin-users')} className="text-sm text-indigo-500 hover:underline mt-2">Manage Users</button>
                 </Card>
                  <Card className="p-6">
                     <h3 className="font-bold text-lg mb-2 text-slate-800 dark:text-white">Courses</h3>

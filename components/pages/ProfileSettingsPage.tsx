@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Card from '../ui/Card';
 import { User, ExternalAccount } from '../../types';
@@ -34,6 +35,8 @@ const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({ user, onUpdat
     const [isAdding, setIsAdding] = useState(false);
     const [newAccount, setNewAccount] = useState({ platform: 'LeetCode' as ExternalAccount['platform'], username: '', profileUrl: '', apiKey: '' });
     const [syncingPlatform, setSyncingPlatform] = useState<string | null>(null);
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [userName, setUserName] = useState(user.name);
 
     const handleSync = async (accountToSync: ExternalAccount) => {
         setSyncingPlatform(accountToSync.platform);
@@ -86,16 +89,38 @@ const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({ user, onUpdat
         setIsAdding(false);
     };
 
+    const handleProfileSave = () => {
+        onUpdateUser({ ...user, name: userName });
+        setIsEditingProfile(false);
+    };
+
     return (
         <div className="max-w-4xl mx-auto">
              <h1 className="text-4xl font-bold mb-8 text-slate-900 dark:text-white">Profile & Settings</h1>
              <div className="space-y-8">
                 <Card className="p-6">
-                     <h2 className="text-2xl font-bold mb-4 text-slate-800 dark:text-white">User Information</h2>
-                     <div className="space-y-2">
-                         <p><span className="font-semibold">Name:</span> {user.name}</p>
-                         <p><span className="font-semibold">Email:</span> {user.email}</p>
+                     <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white">User Information</h2>
+                        {!isEditingProfile && <button onClick={() => setIsEditingProfile(true)} className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700">Edit</button>}
                      </div>
+                     {isEditingProfile ? (
+                        <div className="space-y-3">
+                            <div>
+                                <label className="font-semibold block mb-1">Name:</label>
+                                <input value={userName} onChange={(e) => setUserName(e.target.value)} className="w-full p-2 bg-white dark:bg-slate-700 border rounded-md" />
+                            </div>
+                            <p><span className="font-semibold">Email:</span> {user.email}</p>
+                            <div className="flex gap-2">
+                                <button onClick={handleProfileSave} className="px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700">Save</button>
+                                <button onClick={() => { setIsEditingProfile(false); setUserName(user.name); }} className="px-4 py-2 font-semibold text-slate-700 bg-slate-200 rounded-md hover:bg-slate-300">Cancel</button>
+                            </div>
+                        </div>
+                     ) : (
+                         <div className="space-y-2">
+                             <p><span className="font-semibold">Name:</span> {user.name}</p>
+                             <p><span className="font-semibold">Email:</span> {user.email}</p>
+                         </div>
+                     )}
                 </Card>
                 <Card className="p-6">
                     <div className="flex justify-between items-center mb-4">

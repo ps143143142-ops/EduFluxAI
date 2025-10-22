@@ -1,6 +1,7 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { User, Page } from './types';
-import Header from './components/layout/Header';
+import Header from './components/layout/Header'; // This is now the Sidebar
 import Footer from './components/layout/Footer';
 import HomePage from './components/pages/HomePage';
 import LoginPage from './components/pages/LoginPage';
@@ -19,6 +20,8 @@ import ResourcesPage from './components/pages/ResourcesPage';
 import ProfileSettingsPage from './components/pages/ProfileSettingsPage';
 import LeaderboardPage from './components/pages/LeaderboardPage';
 import CourseDetailPage from './components/pages/CourseDetailPage';
+import AdminUsersPage from './components/pages/AdminUsersPage';
+import AIToolsPage from './components/pages/AIToolsPage';
 import * as api from './services/apiService';
 import {
   createToken,
@@ -32,7 +35,7 @@ import Spinner from './components/ui/Spinner';
 
 const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [currentPage, setCurrentPage] = useState<Page>('learning-roadmap');
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
@@ -46,6 +49,10 @@ const App: React.FC = () => {
         const freshUser = api.getUserById(decoded.user.id);
         if (freshUser) {
             setCurrentUser(freshUser);
+            // On fresh load, if not navigating somewhere specific, send user to dashboard
+            if (currentPage === 'home' || currentPage === 'login' || currentPage === 'register') {
+               setCurrentPage(freshUser.role === 'admin' ? 'admin-dashboard' : 'student-dashboard');
+            }
         } else {
             // User might have been deleted, clear token
             removeToken();
@@ -98,7 +105,8 @@ const App: React.FC = () => {
     const protectedPages: Page[] = [
         'student-dashboard', 'admin-dashboard', 'courses', 'learning-roadmap', 
         'career-quiz', 'resume-builder', 'dsa-learning', 'future-trends', 
-        'dsa-problems', 'resources', 'profile-settings', 'dsa-leaderboard', 'course-detail'
+        'dsa-problems', 'resources', 'profile-settings', 'dsa-leaderboard', 'course-detail',
+        'admin-users', 'ai-tools'
     ];
     
     // Redirect unauthenticated users from protected pages
@@ -132,7 +140,9 @@ const App: React.FC = () => {
       case 'student-dashboard':
         return currentUser ? <StudentDashboard user={currentUser} navigateToCourse={navigateToCourse} /> : null;
       case 'admin-dashboard':
-        return currentUser?.role === 'admin' ? <AdminDashboard /> : null;
+        return currentUser?.role === 'admin' ? <AdminDashboard navigate={navigate} /> : null;
+      case 'admin-users':
+        return currentUser?.role === 'admin' ? <AdminUsersPage /> : null;
       case 'courses':
         return currentUser ? <CoursesPage currentUser={currentUser} navigateToCourse={navigateToCourse} /> : null;
       case 'course-detail':
@@ -141,6 +151,8 @@ const App: React.FC = () => {
         return <LearningRoadmapPage />;
       case 'career-quiz':
         return <CareerQuizPage />;
+      case 'ai-tools':
+          return <AIToolsPage navigate={navigate} />;
       case 'resume-builder':
         return <ResumeBuilderPage />;
       case 'dsa-learning':
@@ -161,12 +173,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans">
-      <Header currentUser={currentUser} onLogout={handleLogout} navigate={navigate} />
-      <main className="flex-grow container mx-auto px-4 py-8">
-        {renderPage()}
-      </main>
-      <Footer />
+    <div className="flex min-h-screen bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans">
+      <Header currentUser={currentUser} onLogout={handleLogout} navigate={navigate} /> {/* This is now the Sidebar */}
+      <div className="flex-grow flex flex-col">
+        <main className="flex-grow p-4 sm:p-6 md:p-8 overflow-y-auto">
+          {renderPage()}
+        </main>
+        <Footer />
+      </div>
       {currentUser && currentUser.role === 'student' && <AIAssistantChatbot />}
     </div>
   );

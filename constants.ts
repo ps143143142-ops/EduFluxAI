@@ -1,3 +1,4 @@
+
 import { Course, User, Resource, DSAProblem } from './types';
 
 // These are now SEED data for the first-time database initialization in apiService.ts
@@ -31,10 +32,10 @@ export const STUDENT_USER_SEED: User = {
 export const MOCK_COURSES: Course[] = [
   {
     id: 'c1',
-    title: 'Java Full-Stack Mastery',
+    title: 'Full-Stack Web Dev Boothtap',
     description: 'Become a complete Java developer. From Spring Boot to React, this course covers it all.',
     instructor: 'Dr. Evelyn Reed',
-    price: 49.99,
+    price: 1.20,
     tags: ['Java', 'Spring Boot', 'Full-Stack'],
     imageUrl: 'https://picsum.photos/seed/java/600/400',
     type: 'paid',
@@ -53,10 +54,10 @@ export const MOCK_COURSES: Course[] = [
   },
   {
     id: 'c2',
-    title: 'AI & Machine Learning Deep Dive',
+    title: 'Machine Learning-Z No Joo',
     description: 'Explore the world of AI with Python, TensorFlow, and PyTorch. Build real-world models.',
     instructor: 'Prof. Kenji Tanaka',
-    price: 79.99,
+    price: 2.00,
     tags: ['AI', 'Machine Learning', 'Python'],
     imageUrl: 'https://picsum.photos/seed/ai/600/400',
     type: 'paid',
@@ -65,10 +66,10 @@ export const MOCK_COURSES: Course[] = [
   },
   {
     id: 'c3',
-    title: 'Modern Frontend with React & Tailwind',
+    title: 'Machine Learning-Z Ardd',
     description: 'Create beautiful, responsive user interfaces with React, TypeScript, and Tailwind CSS.',
     instructor: 'Maria Garcia',
-    price: 39.99,
+    price: 1.00,
     tags: ['React', 'Frontend', 'Tailwind CSS'],
     imageUrl: 'https://picsum.photos/seed/react/600/400',
     type: 'paid',

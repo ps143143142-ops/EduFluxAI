@@ -10,6 +10,7 @@ interface Database {
   resources: Resource[];
   dsaProblems: { category: string, problems: DSAProblem[] }[];
   otpStore: Record<string, { otp: string, expires: number }>;
+  loginOtpStore: Record<string, { otp: string, expires: number }>;
   transactions: Payment[];
 }
 
@@ -35,6 +36,7 @@ const initializeDb = (): Database => {
     resources: MOCK_RESOURCES,
     dsaProblems: MOCK_DSA_PROBLEMS,
     otpStore: {},
+    loginOtpStore: {},
     transactions: [
         { transactionId: 'tx1', userId: 'student01', courseId: 'c1', amount: 49.99, timestamp: '2024-07-20T10:00:00Z' },
         { transactionId: 'tx2', userId: 'student01', courseId: 'c3', amount: 39.99, timestamp: '2024-07-25T15:30:00Z' },
@@ -133,6 +135,57 @@ export const loginUser = (email: string, password: string): { success: boolean, 
     return { success: true, message: 'Login successful!', user };
 };
 
+export const requestLoginOtp = (email: string): { success: boolean, message: string } => {
+    const db = getDb();
+    const user = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+    if (!user) {
+        return { success: false, message: 'No account found with this email.' };
+    }
+    if (!user.isVerified) {
+        return { success: false, message: 'This account has not been verified yet.' };
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    db.loginOtpStore[email.toLowerCase()] = {
+        otp,
+        expires: Date.now() + 5 * 60 * 1000, // OTP expires in 5 minutes
+    };
+    saveDb(db);
+
+    // Simulate sending OTP via email
+    alert(`DEV ONLY: Your login OTP for ${email} is: ${otp}`);
+
+    return { success: true, message: 'A login OTP has been sent to your email.' };
+};
+
+export const loginWithOtp = (email: string, otp: string): { success: boolean, message: string, user?: User } => {
+    const db = getDb();
+    const storedOtpData = db.loginOtpStore[email.toLowerCase()];
+
+    if (!storedOtpData) {
+        return { success: false, message: 'No login request found. Please request a new OTP.' };
+    }
+    if (Date.now() > storedOtpData.expires) {
+        delete db.loginOtpStore[email.toLowerCase()];
+        saveDb(db);
+        return { success: false, message: 'Your OTP has expired. Please request a new one.' };
+    }
+    if (storedOtpData.otp !== otp) {
+        return { success: false, message: 'Invalid OTP. Please try again.' };
+    }
+
+    const user = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (!user) {
+         return { success: false, message: 'Could not find user account.' };
+    }
+    
+    delete db.loginOtpStore[email.toLowerCase()];
+    saveDb(db);
+
+    return { success: true, message: 'Login successful!', user };
+};
+
 
 export const getUserById = (userId: string): User | undefined => {
     const db = getDb();
@@ -155,7 +208,6 @@ export const getTransactionsForUser = (userId: string): Payment[] => {
     return db.transactions.filter(tx => tx.userId === userId).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 };
 
-// FIX: Add transactionId parameter to align with the payment gateway response.
 export const processPayment = (userId: string, courseId: string, amount: number, transactionId: string): Payment => {
     const db = getDb();
     const newPayment: Payment = {
@@ -169,6 +221,38 @@ export const processPayment = (userId: string, courseId: string, amount: number,
     saveDb(db);
     return newPayment;
 };
+
+// --- Admin Functions ---
+export const getAllUsers = (): User[] => {
+    return getDb().users;
+}
+
+export const addUser = (userData: Omit<User, 'id' | 'enrolledCourses' | 'externalAccounts'>): { success: boolean, message: string, user?: User } => {
+    const db = getDb();
+    if (db.users.some(u => u.email.toLowerCase() === userData.email.toLowerCase())) {
+        return { success: false, message: 'An account with this email already exists.' };
+    }
+    const newUser: User = {
+        ...userData,
+        id: `${userData.role}_${Date.now()}`,
+        enrolledCourses: [],
+        externalAccounts: [],
+    };
+    db.users.push(newUser);
+    saveDb(db);
+    return { success: true, message: 'User added successfully', user: newUser };
+};
+
+export const deleteUser = (userId: string): { success: boolean, message: string } => {
+    const db = getDb();
+    const initialLength = db.users.length;
+    db.users = db.users.filter(u => u.id !== userId);
+    if (db.users.length < initialLength) {
+        saveDb(db);
+        return { success: true, message: 'User deleted successfully.' };
+    }
+    return { success: false, message: 'User not found.' };
+}
 
 
 // --- Content Management ---
